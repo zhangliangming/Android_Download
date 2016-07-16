@@ -174,6 +174,7 @@ public class DownloadThreadManage {
 	private synchronized int getThreadDownloadedSizeTask(DownloadTask task,
 			int threadID, int threadCount) {
 		int oldDownloadedSize = 0;
+		
 		if (downloadThreadEventCallBack != null && task != null) {
 			oldDownloadedSize = downloadThreadEventCallBack
 					.getThreadDownloadedSize(task, threadID, threadCount);
