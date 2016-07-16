@@ -63,6 +63,12 @@ public class MainAPP {
 		public void canceled(DownloadTask task) {
 			System.out.println("任务" + task.getTid() + "取消下载");
 		}
+
+		@Override
+		public int getThreadDownloadedSize(DownloadTask task, int threadID,
+				int threadCount) {
+			return 0;
+		}
 	};
 
 	/**

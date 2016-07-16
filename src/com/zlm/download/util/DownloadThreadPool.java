@@ -323,6 +323,20 @@ public class DownloadThreadPool {
 	 */
 	public interface IDownloadThreadEventCallBack {
 		/**
+		 * 获取子线程的历史下载进度大小
+		 * 
+		 * @param task
+		 *            任务
+		 * @param threadID
+		 *            线程id
+		 * @param threadCount
+		 *            线程数
+		 * @return
+		 */
+		public int getThreadDownloadedSize(DownloadTask task, int threadID,
+				int threadCount);
+
+		/**
 		 * 等待中
 		 * 
 		 * @param task

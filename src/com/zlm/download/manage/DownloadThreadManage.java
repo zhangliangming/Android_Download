@@ -157,7 +157,29 @@ public class DownloadThreadManage {
 			canceledTask();
 		}
 
+		@Override
+		public int getThreadDownloadedSize(DownloadTask task, int threadID,
+				int threadCount) {
+			return getThreadDownloadedSizeTask(task, threadID, threadCount);
+		}
 	};
+
+	/**
+	 * 
+	 * @param task
+	 * @param threadID
+	 * @param threadCount
+	 * @return
+	 */
+	private synchronized int getThreadDownloadedSizeTask(DownloadTask task,
+			int threadID, int threadCount) {
+		int oldDownloadedSize = 0;
+		if (downloadThreadEventCallBack != null && task != null) {
+			oldDownloadedSize = downloadThreadEventCallBack
+					.getThreadDownloadedSize(task, threadID, threadCount);
+		}
+		return oldDownloadedSize;
+	}
 
 	/**
 	 * 线程下载
@@ -175,6 +197,9 @@ public class DownloadThreadManage {
 		}
 	}
 
+	/**
+ * 
+ */
 	private synchronized void downloadingTask() {
 		if (timeThread == null) {
 			timeThread = new Thread(new TimeRunable());
@@ -188,6 +213,7 @@ public class DownloadThreadManage {
 	private synchronized void pauseedTask() {
 
 		int downloadedSize = olddownloadedSize;
+		if (downloadThreads != null)
 		for (int i = 0; i < downloadThreads.length; i++) {
 			DownloadThread downloadThread = downloadThreads[i];
 			if (downloadThread != null) {
@@ -220,6 +246,7 @@ public class DownloadThreadManage {
 	private synchronized void finishedTask() {
 
 		int downloadedSize = olddownloadedSize;
+		if (downloadThreads != null)
 		for (int i = 0; i < downloadThreads.length; i++) {
 			DownloadThread downloadThread = downloadThreads[i];
 			if (downloadThread != null) {
@@ -255,6 +282,7 @@ public class DownloadThreadManage {
 	private synchronized void errorTask(DownloadTask task) {
 
 		isError = true;
+		if (downloadThreads != null)
 		for (int i = 0; i < downloadThreads.length; i++) {
 			DownloadThread downloadThread = downloadThreads[i];
 			if (downloadThread != null) {
@@ -282,15 +310,15 @@ public class DownloadThreadManage {
 	 * 取消
 	 */
 	private synchronized void canceledTask() {
-
-		for (int i = 0; i < downloadThreads.length; i++) {
-			DownloadThread downloadThread = downloadThreads[i];
-			if (downloadThread != null) {
-				if (!downloadThread.isCancel()) {
-					return;
+		if (downloadThreads != null)
+			for (int i = 0; i < downloadThreads.length; i++) {
+				DownloadThread downloadThread = downloadThreads[i];
+				if (downloadThread != null) {
+					if (!downloadThread.isCancel()) {
+						return;
+					}
 				}
 			}
-		}
 		if (timeThread != null) {
 			timeThread = null;
 		}
@@ -316,6 +344,13 @@ public class DownloadThreadManage {
 			// 获取该网络资源文件的长度
 			final int length = getFileLength(new URL(task.getDownloadUrl()));
 			// final int length = (int) task.getFileSize();
+			if (length < 0) {
+				if (downloadThreadCallBack != null) {
+					task.setStatus(DownloadTask.DOWNLOAD_ERROR_FILELENGTH);
+					downloadThreadCallBack.error(task);
+				}
+				return;
+			}
 			task.setFileSize(length);
 			File destFile = new File(task.getFilePath());
 			File temp = destFile.getParentFile();
@@ -410,6 +445,13 @@ public class DownloadThreadManage {
 			// 获取该网络资源文件的长度
 			int length = getFileLength(new URL(task.getDownloadUrl()));
 			// int length = (int) task.getFileSize();
+			if (length < 0) {
+				if (downloadThreadCallBack != null) {
+					task.setStatus(DownloadTask.DOWNLOAD_ERROR_FILELENGTH);
+					downloadThreadCallBack.error(task);
+				}
+				return;
+			}
 			task.setFileSize(length);
 			File destFile = new File(task.getFilePath());
 			File temp = destFile.getParentFile();
@@ -540,6 +582,20 @@ public class DownloadThreadManage {
 	 * 
 	 */
 	public interface IDownloadThreadCallBack {
+		/**
+		 * 获取子线程的历史下载进度大小
+		 * 
+		 * @param task
+		 *            任务
+		 * @param threadID
+		 *            线程id
+		 * @param threadCount
+		 *            线程数
+		 * @return
+		 */
+		public int getThreadDownloadedSize(DownloadTask task, int threadID,
+				int threadCount);
+
 		/**
 		 * 线程的下载进度
 		 * 

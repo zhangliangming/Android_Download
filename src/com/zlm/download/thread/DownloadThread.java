@@ -74,7 +74,9 @@ public class DownloadThread extends Thread {
 			int endIndex, int threadCount,
 			IDownloadThreadCallBack downloadThreadCallBack) {
 		this.threadID = threadID;
-		this.startIndex = startIndex;
+		this.startIndex = startIndex
+				+ downloadThreadCallBack.getThreadDownloadedSize(task,
+						threadID, threadCount);
 		this.endIndex = endIndex;
 		this.task = task;
 		this.downloadThreadCallBack = downloadThreadCallBack;
@@ -118,13 +120,17 @@ public class DownloadThread extends Thread {
 				// }
 
 				// if (downloadedSize < endIndex) {
+				if ((startIndex + downloadedSize) > endIndex) {
+					// 设置下载进度为完成100%
+					downloadedSize = (endIndex - startIndex);
+				}
 				// 正在下载
 				if (downloadThreadCallBack != null) {
 
 					task.setType(DownloadTask.DOWNLOAD_DOWNLOING);
+
 					downloadThreadCallBack.threadDownloading(task, threadID,
 							threadCount, downloadedSize);
-
 					downloadThreadCallBack.downloading();
 				}
 				if (endIndex - downloadedSize < endIndex / 2
@@ -169,6 +175,7 @@ public class DownloadThread extends Thread {
 			if (downloadThreadCallBack != null) {
 				task.setStatus(DownloadTask.DOWNLOAD_ERROR_OTHER);
 				if (downloadThreadCallBack != null && task != null) {
+					task.setStatus(DownloadTask.DOWNLOAD_ERROR_NONET);
 					downloadThreadCallBack.error(task);
 				}
 			}

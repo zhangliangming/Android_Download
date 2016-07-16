@@ -28,6 +28,7 @@ public class DownloadTask {
 	public static final int DOWNLOAD_CANCEL = i++;// 下载取消
 	public static final int DOWNLOAD_ERROR_NONET = i++; // 下载失败-无网络
 	public static final int DOWNLOAD_ERROR_NOTWIFI = i++; // 下载失败-不是wifi
+	public static final int DOWNLOAD_ERROR_FILELENGTH = i++;// 获取文件失败
 	public static final int DOWNLOAD_ERROR_OTHER = i++; // 下载失败-其它原因
 	public static final int DOWNLOAD_FINISH = i++;// 下载完成
 
@@ -150,7 +151,8 @@ public class DownloadTask {
 		this.oldDownloadedSize = oldDownloadedSize;
 	}
 
-	public void setDownloadThreadManage(DownloadThreadManage downloadThreadManage) {
+	public void setDownloadThreadManage(
+			DownloadThreadManage downloadThreadManage) {
 		this.downloadThreadManage = downloadThreadManage;
 	}
 
