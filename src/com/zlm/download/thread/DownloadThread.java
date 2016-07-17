@@ -62,10 +62,6 @@ public class DownloadThread extends Thread {
 	 */
 	private DTEventCallBack dteCallBack;
 	/**
-	 * 是否通知
-	 */
-	private boolean isNotify = false;
-	/**
 	 * 线程总数
 	 */
 	private int threadCount = 0;
@@ -133,11 +129,6 @@ public class DownloadThread extends Thread {
 							threadCount, downloadedSize);
 					downloadThreadCallBack.downloading();
 				}
-				if (endIndex - downloadedSize < endIndex / 2
-						&& dteCallBack != null && !isNotify) {
-					isNotify = true;
-					dteCallBack.notifyOtherThread();
-				}
 				// }
 				if (isPause) {
 					// 暂停任务
@@ -161,7 +152,10 @@ public class DownloadThread extends Thread {
 					downloadThreadCallBack.finished();
 				}
 			}
-			// System.out.println("线程：" + threadID + "下载完毕 " + downloadedSize);
+			if (dteCallBack != null) {
+				dteCallBack.notifyOtherThread();
+			}
+			System.out.println("线程：" + threadID + "下载完毕 " + downloadedSize);
 			// } else {
 			// // 服务器异常
 			// isError = true;
