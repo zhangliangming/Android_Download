@@ -166,12 +166,9 @@ public class DownloadThread extends Thread {
 
 			// 下载出错
 			isError = true;
-			if (downloadThreadCallBack != null) {
+			if (downloadThreadCallBack != null && task != null) {
 				task.setStatus(DownloadTask.DOWNLOAD_ERROR_OTHER);
-				if (downloadThreadCallBack != null && task != null) {
-					task.setStatus(DownloadTask.DOWNLOAD_ERROR_NONET);
-					downloadThreadCallBack.error(task);
-				}
+				downloadThreadCallBack.error(task);
 			}
 
 		} finally {
